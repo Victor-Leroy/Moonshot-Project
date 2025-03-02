@@ -1,5 +1,25 @@
 # Doodle Accessibility Enhancements for Screen Readers
 
+## Table of Contents
+1. [Introduction](#1-introduction)
+2. [Scope](#2-scope)
+3. [User Requirements](#3-user-requirements)
+   - [Primary Users](#31-primary-users)
+4. [Functional Requirements](#4-functional-requirements)
+   - [Navigation Improvements](#41-navigation-improvements)
+   - [Checkbox and Form Selection Enhancements](#42-checkbox-and-form-selection-enhancements)
+   - [Improved Screen Reader Feedback](#43-improved-screen-reader-feedback)
+   - [Mobile Accessibility Enhancements](#44-mobile-accessibility-enhancements)
+   - [Voice Input for Future Expansion](#45-voice-input-for-future-expansion)
+5. [Target Audience](#5-target-audience)
+   - [Persona 1 - Emma (Blind User)](#51-persona-1---emma-blind-user)
+   - [Persona 2 - Alex (Mobile User)](#52-persona-2---alex-mobile-user)
+   - [Persona 3 - David (Hands-Free User)](#53-persona-3---david-hands-free-user)
+6. [Additional Considerations](#6-additional-considerations)
+7. [Implementation Constraints](#7-implementation-constraints)
+8. [Defining Success](#8-defining-success)
+
+
 ## 1. Introduction
 
 Doodle's current interface presents significant challenges for users relying on screen readers, particularly VoiceOver and NVDA. This document defines the functional requirements for improving accessibility, ensuring a smoother experience without modifying Doodle's core source code.
@@ -18,15 +38,6 @@ The project focuses on making Doodle's group surveys more accessible by addressi
 
 - Mobile users who use VoiceOver (iOS) or TalkBack (Android).
 
-### 3.2. Key User Stories
-
-As a screen reader user, I want to navigate Doodle using the keyboard without confusion.
-
-As a blind user, I want clear labels for time slot selections, so I know what I am choosing.
-
-As a visually impaired user, I want immediate verbal confirmation when I make a selection.
-
-As a hands-free user, I want to use voice commands to select and submit my survey choices.
 
 ## 4. Functional Requirements
 
@@ -90,15 +101,29 @@ FR-10: Voice-Controlled Submission
 
 Users shall be able to submit their choices with a voice command.
 
-## 5. Additional Considerations
+## 5. Target Audience
+
+### 5.1. Persona 1 - Emma (Blind User)
+
+![Emma](img/persona1.png)
+
+### 5.2. Persona 2 - Alex (Mobile User)
+
+![Alex](img/persona2.png)
+
+### 5.3. Persona 3 - David (Hands-Free User)
+
+![David](img/persona3.png)
+
+## 6. Additional Considerations
 
 The solution must be lightweight and compatible with modern browsers, ensuring that it does not interfere with Doodle’s core functionality. The deployment process should be simple and achievable through a browser extension or script.
 
-## 6. Implementation Constraints
+## 7. Implementation Constraints
 
 Since there is no access to Doodle’s backend or source code, all enhancements must be applied dynamically using browser-side scripting. Compatibility with major screen readers, such as NVDA, JAWS, and VoiceOver, is essential.
 
-## 7. Defining Success
+## 8. Defining Success
 
 Success will be measured by how easily users can navigate Doodle with a keyboard or screen reader. Time slots should be clearly labeled, selections should be confirmed audibly, and the interface should provide instant feedback. Ultimately, screen reader users should be able to complete surveys efficiently and independently without unnecessary frustration.
 

@@ -8,9 +8,9 @@ The primary goal is to develop a working prototype that demonstrates improved ac
 ### 🔹 Objective: Understand the specific needs of screen reader users and define the functionalities to develop.
 #### ✅ Tasks:
 
-- [ ] Study web accessibility principles (WCAG, ARIA, NVDA, JAWS, VoiceOver).
+- [x] Study web accessibility principles (WCAG, ARIA, NVDA, JAWS, VoiceOver).
 
-- [ ] Identify the main accessibility barriers on Doodle for screen reader users.
+- [x] Identify the main accessibility barriers on Doodle for screen reader users.
 
 - [ ] Define priority improvements.
 
