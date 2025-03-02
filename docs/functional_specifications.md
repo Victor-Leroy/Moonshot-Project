@@ -1,6 +1,19 @@
-# Doodle Accessibility Enhancements for Screen Readers
+<br />
+<div align="center">
+  <h1 align="center">Functional Specifications</h1>
+  <p align="center">
+    <strong>Doodle Accessibility Enhancements for Screen Readers</strong>
+    <br />
+  
+  </p>
+</div>
 
-## Table of Contents
+<details>
+<summary><b> 📖 Table Of Contents</b></summary>
+
+
+
+
 1. [Introduction](#1-introduction)
 2. [Scope](#2-scope)
 3. [User Requirements](#3-user-requirements)
@@ -19,6 +32,7 @@
 7. [Implementation Constraints](#7-implementation-constraints)
 8. [Defining Success](#8-defining-success)
 
+</details>
 
 ## 1. Introduction
 
