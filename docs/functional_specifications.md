@@ -71,15 +71,15 @@ Users must be able to select time slots and submit responses without requiring a
 
 FR-3: ARIA Labels for Checkboxes
 
-Each checkbox must have an aria-label specifying the corresponding date and time.
+Each checkbox must have an ```aria-label``` specifying the corresponding date and time.
 
-Example: aria-label="Select Monday 3 PM".
+Example: ```aria-label="Select Monday 3 PM"```.
 
 FR-4: Live Feedback on Selection Changes
 
 When a user selects or deselects a checkbox, a verbal announcement shall confirm the action.
 
-Implemented using aria-live="polite".
+Implemented using ```aria-live="polite"```.
 
 ### 4.3. Improved Screen Reader Feedback
 
@@ -140,6 +140,20 @@ Since there is no access to Doodle’s backend or source code, all enhancements 
 ## 8. Defining Success
 
 Success will be measured by how easily users can navigate Doodle with a keyboard or screen reader. Time slots should be clearly labeled, selections should be confirmed audibly, and the interface should provide instant feedback. Ultimately, screen reader users should be able to complete surveys efficiently and independently without unnecessary frustration.
+
+##  9. Glossary
+
+| Term | Definition |
+|------|------------|
+| **ARIA (Accessible Rich Internet Applications)** | A set of attributes that improve the accessibility of web content for screen reader users. |
+| **ARIA Labels** | Descriptive text assigned to elements (e.g., buttons, checkboxes) to make them understandable to screen readers. |
+| **ARIA Live Regions** | A mechanism to announce dynamic changes on a webpage (e.g., selection confirmation) without shifting focus. |
+| **Focus Order** | The sequence in which elements are highlighted when navigating using the `Tab` key. |
+| **Screen Reader** | Software that converts text into speech or braille output, commonly used by blind and visually impaired users (e.g., NVDA, VoiceOver, JAWS). |
+| **Tab Navigation** | The ability to move through elements on a webpage using the `Tab` key. |
+| **Web Speech API** | A technology enabling voice input and speech synthesis in web applications. |
+| **VoiceOver & TalkBack** | Screen reader software for iOS (VoiceOver) and Android (TalkBack) that reads on-screen content aloud. |
+
 
 
 
