@@ -40,7 +40,7 @@ Doodle's current interface presents significant challenges for users relying on 
 
 ## 2. Scope
 
-The project focuses on making Doodle's group surveys more accessible by addressing navigation, labeling, feedback, and input methods. The implementation will use browser-side enhancements like scripts or extensions.
+The project focuses on making Doodle more accessible by addressing navigation, labeling, feedback, and input methods. The implementation will use browser-side enhancements like scripts or extensions.
 
 ## 3. User Requirements
 
@@ -48,10 +48,18 @@ The project focuses on making Doodle's group surveys more accessible by addressi
 
 - Blind or visually impaired users using screen readers.
 
+
+### 3.2. Secondary Users
+
+- Users with motor impairments who prefer voice input.
+
+- Users who want to complete surveys hands-free.
+
+- Users who prefer voice commands for efficiency.
+
 - Users who rely on keyboard navigation instead of a mouse.
 
 - Mobile users who use VoiceOver (iOS) or TalkBack (Android).
-
 
 ## 4. Functional Requirements
 
@@ -115,33 +123,83 @@ FR-10: Voice-Controlled Submission
 
 Users shall be able to submit their choices with a voice command.
 
-## 5. Target Audience
+## 6. Target Audience
 
-### 5.1. Persona 1 - Emma (Blind User)
+### 6.1. Persona 1 - Emma (Blind User)
 
 ![Emma](img/persona1.png)
 
-### 5.2. Persona 2 - Alex (Mobile User)
+### 6.2. Persona 2 - Alex (Mobile User)
 
 ![Alex](img/persona2.png)
 
-### 5.3. Persona 3 - David (Hands-Free User)
+### 6.3. Persona 3 - David (Hands-Free User)
 
 ![David](img/persona3.png)
 
-## 6. Additional Considerations
+## 7. Additional Considerations
 
-The solution must be lightweight and compatible with modern browsers, ensuring that it does not interfere with Doodle’s core functionality. The deployment process should be simple and achievable through a browser extension or script.
+The solution must be lightweight and compatible with modern browsers, ensuring that it does not interfere with Doodle’s core functionality. The deployment process should be simple and achievable through a browser extension or userscript.
 
-## 7. Implementation Constraints
+### 7.1. Security & Privacy
 
-Since there is no access to Doodle’s backend or source code, all enhancements must be applied dynamically using browser-side scripting. Compatibility with major screen readers, such as NVDA, JAWS, and VoiceOver, is essential.
+The script must not store user data or require external servers. Ensure permissions are minimal (e.g., no unnecessary API access). Consider implementing local storage if user preferences need to be saved.
 
-## 8. Defining Success
+### 7.2. Browser & Device Compatibility
 
-Success will be measured by how easily users can navigate Doodle with a keyboard or screen reader. Time slots should be clearly labeled, selections should be confirmed audibly, and the interface should provide instant feedback. Ultimately, screen reader users should be able to complete surveys efficiently and independently without unnecessary frustration.
+Must work on Chrome, Firefox, Edge, and Safari. Ensure proper functionality across desktop and mobile versions. Test with screen readers like NVDA, JAWS, and VoiceOver.
 
-##  9. Glossary
+### 7.3. Performance Optimization
+
+Minimize script execution time to prevent page slowdowns. Use event listeners efficiently to avoid excessive CPU usage. Ensure that updates are applied dynamically without page reloads.
+
+### 7.4. Scalability & Future Enhancements
+
+Should support additional accessibility features (e.g., Dark Mode, Contrast Mode). Potential integration with voice assistants (Google Assistant, Siri). Expand support for other scheduling platforms beyond Doodle.
+
+## 8. Implementation Constraints
+
+Since there is no access to Doodle’s backend or source code, all enhancements must be applied dynamically using browser-side scripting. This means the solution must operate without modifying Doodle’s core functionality, ensuring seamless integration without conflicts.
+
+### 8.1. Technical Limitations
+
+Enhancements rely on DOM manipulation, meaning updates to Doodle’s UI structure may require script adjustments.
+Features must function without injecting new HTML elements that could interfere with Doodle’s layout. Browser-side scripting limits access to server-side validation, database interactions, and API modifications.
+
+### 8.2. Screen Reader & Accessibility Compatibility
+
+The solution must work reliably across:
+- NVDA (Windows)
+- JAWS (Windows)
+- VoiceOver (macOS & iOS)
+- TalkBack (Android)
+
+Requires thorough testing with different browsers to ensure accessibility support.
+
+### 8.3. Browser & Device Constraints
+
+Must be compatible with modern browsers (Chrome, Firefox, Edge, and Safari). Needs to function both on desktop and mobile devices, considering differences in touch-based navigation.
+
+### 8.4. Future-Proofing & Maintainability
+Since Doodle may update its UI, the script should be easily modifiable for quick adaptations. Consider using CSS selectors and ARIA attributes dynamically, so changes in class names don’t break functionality. Future improvements could include browser extension support for more seamless deployment.
+
+## 9. Defining Success
+
+Success will be evaluated based on the following criteria:
+
+#### 1️⃣ Accessibility & Usability
+
+Users must be able to navigate Doodle fully via keyboard and screen readers (NVDA, JAWS, VoiceOver, TalkBack). Time slots should be clearly labeled and easy to select using voice commands or keyboard navigation.
+
+#### 2️⃣ Feedback & Confirmation
+
+The system must provide immediate audio feedback when a selection is made. Users should receive clear confirmation before submitting responses to prevent errors.
+
+#### 3️⃣ Independence & Efficiency
+
+Visually impaired users should be able to complete Doodle surveys independently without external assistance. The process should be as fast and intuitive as for sighted users, reducing frustration and improving accessibility.
+
+##  10. Glossary
 
 | Term | Definition |
 |------|------------|
@@ -153,8 +211,3 @@ Success will be measured by how easily users can navigate Doodle with a keyboard
 | **Tab Navigation** | The ability to move through elements on a webpage using the `Tab` key. |
 | **Web Speech API** | A technology enabling voice input and speech synthesis in web applications. |
 | **VoiceOver & TalkBack** | Screen reader software for iOS (VoiceOver) and Android (TalkBack) that reads on-screen content aloud. |
-
-
-
-
-

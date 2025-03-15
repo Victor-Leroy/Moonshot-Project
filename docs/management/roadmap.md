@@ -12,7 +12,7 @@ The primary goal is to develop a working prototype that demonstrates improved ac
 
 - [x] Identify the main accessibility barriers on Doodle for screen reader users.
 
-- [ ] Define priority improvements.
+- [x] Define priority improvements.
 
 - [ ] Draft a functional and technical specifications document.
 #### 📍 Deliverable: A detailed specifications document.
