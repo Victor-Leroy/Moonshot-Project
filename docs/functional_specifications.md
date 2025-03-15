@@ -81,25 +81,25 @@ The project focuses on making Doodle more accessible by addressing navigation, l
 
 ### 4.1. Navigation Improvements
 
-FR-1: Logical Focus Order
+#### FR-1: Logical Focus Order
 
 The system shall ensure a predictable focus order when using Tab and arrow keys.
 
 Users shall not experience random jumps between elements.
 
-FR-2: Keyboard-Only Interaction
+#### FR-2: Keyboard-Only Interaction
 
 Users must be able to select time slots and submit responses without requiring a mouse.
 
 ### 4.2. Checkbox and Form Selection Enhancements
 
-FR-3: ARIA Labels for Checkboxes
+#### FR-3: ARIA Labels for Checkboxes
 
 Each checkbox must have an ```aria-label``` specifying the corresponding date and time.
 
 Example: ```aria-label="Select Monday 3 PM"```.
 
-FR-4: Live Feedback on Selection Changes
+#### FR-4: Live Feedback on Selection Changes
 
 When a user selects or deselects a checkbox, a verbal announcement shall confirm the action.
 
@@ -107,11 +107,11 @@ Implemented using ```aria-live="polite"```.
 
 ### 4.3. Improved Screen Reader Feedback
 
-FR-5: Descriptive Labels for Interactive Elements
+#### FR-5: Descriptive Labels for Interactive Elements
 
 Buttons, pop-ups, and key interactive components must have meaningful descriptions.
 
-FR-6: Speech Synthesis for Confirmation Messages
+#### FR-6: Speech Synthesis for Confirmation Messages
 
 When a selection is made, a synthesized voice should confirm the action.
 
@@ -119,23 +119,23 @@ Example: "Monday at 3 PM selected."
 
 ### 4.4. Mobile Accessibility Enhancements
 
-FR-7: VoiceOver & TalkBack Optimization
+#### FR-7: VoiceOver & TalkBack Optimization
 
 Time slots must be properly announced when navigating via VoiceOver or TalkBack.
 
-FR-8: Touch Navigation Improvements
+#### FR-8: Touch Navigation Improvements
 
 Ensure touch-based interactions trigger proper screen reader responses.
 
 ### 4.5. Voice Input for Future Expansion
 
-FR-9: Voice Command Selection 
+#### FR-9: Voice Command Selection 
 
 Users shall be able to say "Select Monday at 3 PM" to check a time slot.
 
 Implemented via Web Speech API.
 
-FR-10: Voice-Controlled Submission 
+#### FR-10: Voice-Controlled Submission 
 
 Users shall be able to submit their choices with a voice command.
 
