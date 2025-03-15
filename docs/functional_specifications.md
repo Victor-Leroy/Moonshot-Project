@@ -7,30 +7,46 @@
   
   </p>
 </div>
-
+<br />
 <details>
 <summary><b> 📖 Table Of Contents</b></summary>
 
-
-
-
-1. [Introduction](#1-introduction)
-2. [Scope](#2-scope)
-3. [User Requirements](#3-user-requirements)
-   - [Primary Users](#31-primary-users)
-4. [Functional Requirements](#4-functional-requirements)
-   - [Navigation Improvements](#41-navigation-improvements)
-   - [Checkbox and Form Selection Enhancements](#42-checkbox-and-form-selection-enhancements)
-   - [Improved Screen Reader Feedback](#43-improved-screen-reader-feedback)
-   - [Mobile Accessibility Enhancements](#44-mobile-accessibility-enhancements)
-   - [Voice Input for Future Expansion](#45-voice-input-for-future-expansion)
-5. [Target Audience](#5-target-audience)
-   - [Persona 1 - Emma (Blind User)](#51-persona-1---emma-blind-user)
-   - [Persona 2 - Alex (Mobile User)](#52-persona-2---alex-mobile-user)
-   - [Persona 3 - David (Hands-Free User)](#53-persona-3---david-hands-free-user)
-6. [Additional Considerations](#6-additional-considerations)
-7. [Implementation Constraints](#7-implementation-constraints)
-8. [Defining Success](#8-defining-success)
+1. [Introduction](#1-introduction)  
+2. [Scope](#2-scope)  
+3. [User Requirements](#3-user-requirements)  
+   - [Primary Users](#31-primary-users)  
+   - [Secondary Users](#32-secondary-users)  
+4. [Functional Requirements](#4-functional-requirements)  
+   - [Navigation Improvements](#41-navigation-improvements)  
+   - [Checkbox and Form Selection Enhancements](#42-checkbox-and-form-selection-enhancements)  
+   - [Improved Screen Reader Feedback](#43-improved-screen-reader-feedback)  
+   - [Mobile Accessibility Enhancements](#44-mobile-accessibility-enhancements)  
+   - [Voice Input for Future Expansion](#45-voice-input-for-future-expansion)  
+5. [Target Audience](#5-target-audience)  
+   - [Persona 1 - Emma (Blind User)](#51-persona-1---emma-blind-user)  
+   - [Persona 2 - Alex (Mobile User)](#52-persona-2---alex-mobile-user)  
+   - [Persona 3 - David (Hands-Free User)](#53-persona-3---david-hands-free-user)  
+6. [Additional Considerations](#6-additional-considerations)  
+   - [Security & Privacy](#61-security--privacy)  
+   - [Browser & Device Compatibility](#62-browser--device-compatibility)  
+   - [Performance Optimization](#63-performance-optimization)  
+   - [Scalability & Future Enhancements](#64-scalability--future-enhancements)  
+7. [Implementation Constraints](#7-implementation-constraints)  
+   - [Technical Limitations](#71-technical-limitations)  
+   - [Screen Reader & Accessibility Compatibility](#72-screen-reader--accessibility-compatibility)  
+   - [Browser & Device Constraints](#73-browser--device-constraints)  
+   - [Future-Proofing & Maintainability](#74-future-proofing--maintainability)  
+8. [Defining Success](#8-defining-success)  
+   - [Accessibility & Usability](#81-accessibility--usability)  
+   - [Feedback & Confirmation](#82-feedback--confirmation)  
+   - [Independence & Efficiency](#83-independence--efficiency)  
+9. [Non-Functional Requirements](#9-non-functional-requirements)  
+   - [Performance & Efficiency](#91-performance--efficiency)  
+   - [Compatibility & Cross-Platform Support](#92-compatibility--cross-platform-support)  
+   - [Security & Privacy](#93-security--privacy)  
+   - [Maintainability & Scalability](#94-maintainability--scalability)  
+   - [User Experience & Accessibility](#95-user-experience--accessibility)  
+10. [Glossary](#10-glossary)  
 
 </details>
 
