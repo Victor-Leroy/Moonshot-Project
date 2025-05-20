@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "Doodle Accessibility Enhancer",
+    "version": "1.0",
+    "description": "Adds voice control and screen reader enhancements to Doodle meeting pages.",
+    "permissions": ["storage", "scripting"],
+    "content_scripts": [
+      {
+        "matches": ["*://doodle.com/meeting/organize/groups*"],
+        "js": ["content.js"],
+        "run_at": "document_idle"
+      }
+    ],
+    "host_permissions": ["*://doodle.com/*"],
+    "icons": {
+      "16": "icons/icon.png"
+    }
+  }
+  
+  
