@@ -152,6 +152,68 @@
                     titleInput.value = purpose;
                     titleInput.dispatchEvent(new Event('input', { bubbles: true }));
                 }
+                askForDescription();
+            };
+            rec.start();
+        });
+    }
+
+    function askForDescription() {
+        const isFrench = selectedLang === 'fr-FR';
+        const prompt = isFrench ? "Souhaitez-vous ajouter une description ?" : "Would you like to add a description?";
+        speakText(prompt, () => {
+            const rec = new webkitSpeechRecognition();
+            rec.lang = selectedLang;
+            rec.onresult = function(event) {
+                const response = event.results[0][0].transcript.toLowerCase();
+                if (response.includes('yes') || response.includes('oui')) {
+                    const askDesc = isFrench ? "Quelle est la description ?" : "What is the description?";
+                    speakText(askDesc, () => {
+                        const descRec = new webkitSpeechRecognition();
+                        descRec.lang = selectedLang;
+                        descRec.onresult = function(event) {
+                            const desc = event.results[0][0].transcript.trim();
+                            const descInput = document.querySelector('textarea');
+                            if (descInput) {
+                                descInput.value = desc;
+                                descInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                            askForLocation();
+                        };
+                        descRec.start();
+                    });
+                } else {
+                    askForLocation();
+                }
+            };
+            rec.start();
+        });
+    }
+
+    function askForLocation() {
+        const isFrench = selectedLang === 'fr-FR';
+        const prompt = isFrench ? "Souhaitez-vous ajouter un lieu ?" : "Would you like to add a location?";
+        speakText(prompt, () => {
+            const rec = new webkitSpeechRecognition();
+            rec.lang = selectedLang;
+            rec.onresult = function(event) {
+                const response = event.results[0][0].transcript.toLowerCase();
+                if (response.includes('yes') || response.includes('oui')) {
+                    const askLoc = isFrench ? "Quel est le lieu ?" : "What is the location?";
+                    speakText(askLoc, () => {
+                        const locRec = new webkitSpeechRecognition();
+                        locRec.lang = selectedLang;
+                        locRec.onresult = function(event) {
+                            const location = event.results[0][0].transcript.trim();
+                            const locInput = document.querySelector('input[placeholder*="passer"]');
+                            if (locInput) {
+                                locInput.value = location;
+                                locInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        };
+                        locRec.start();
+                    });
+                }
             };
             rec.start();
         });
