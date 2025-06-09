@@ -22,11 +22,11 @@ The primary goal is to develop a working prototype that demonstrates improved ac
 ### 🔹 Objective: Develop a working prototype that demonstrates accessibility improvements.
 #### ✅ Tasks:
 
-- [ ] Implement ARIA improvements and keyboard navigation enhancements.
+- [x] Implement ARIA improvements and keyboard navigation enhancements.
 
-- [ ] Develop an interactive prototype for time slot selection.
+- [x] Develop an interactive prototype for time slot selection.
 
-- [ ] Test audio confirmations and user feedback mechanisms.
+- [x] Test audio confirmations and user feedback mechanisms.
 #### 📍 Deliverable: A functional prototype showcasing navigation improvements.
 
 ## Phase 3: Refinement & Internal Testing (April 8 - May 5)
@@ -34,11 +34,11 @@ The primary goal is to develop a working prototype that demonstrates improved ac
 ### 🔹 Objective: Ensure the prototype is stable, functional, and ready for real-world testing.
 #### ✅ Tasks:
 
-- [ ] Finalize the screen reader-optimized interface.
+- [x] Finalize the screen reader-optimized interface.
 
-- [ ] Improve real-time feedback for selections.
+- [x] Improve real-time feedback for selections.
 
-- [ ] Test the prototype with NVDA, VoiceOver, and TalkBack.
+- [x] Test the prototype with NVDA, VoiceOver, and TalkBack.
 #### 📍 Deliverable: A polished prototype, ready for user testing.
 
 ## Phase 4: User Testing & Iterations (May 6 - June 2)
@@ -46,11 +46,11 @@ The primary goal is to develop a working prototype that demonstrates improved ac
 ### 🔹 Objective: Validate accessibility improvements with blind and visually impaired users.
 #### ✅ Tasks:
 
-- [ ] Conduct usability testing with screen reader users.
+- [x] Conduct usability testing with screen reader users.
 
-- [ ] Gather user feedback and identify necessary improvements.
+- [x] Gather user feedback and identify necessary improvements.
 
-- [ ] Apply refinements to optimize the experience.
+- [x] Apply refinements to optimize the experience.
 #### 📍 Deliverable: A refined prototype, incorporating user feedback.
 
 ## Phase 5: Finalization and Presentation Preparation (June 3 - June 17)
@@ -58,7 +58,7 @@ The primary goal is to develop a working prototype that demonstrates improved ac
 ### 🔹 Objective: Prepare for the final demonstration and project presentation.
 #### ✅ Tasks:
 
-- [ ] Conduct final stability tests and bug fixes.
+- [x] Conduct final stability tests and bug fixes.
 
 - [ ] Prepare a structured demonstration script.
 
