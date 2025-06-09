@@ -1,5 +1,5 @@
 (function() {
-    let selectedLang = 'en-US';
+    let selectedLang = 'fr-FR';
     let availableVoices = [];
 
     if (window.speechSynthesis.getVoices().length === 0) {
@@ -193,9 +193,11 @@
     function askForLocation() {
         const isFrench = selectedLang === 'fr-FR';
         const prompt = isFrench ? "Souhaitez-vous ajouter un lieu ?" : "Would you like to add a location?";
+    
         speakText(prompt, () => {
             const rec = new webkitSpeechRecognition();
             rec.lang = selectedLang;
+    
             rec.onresult = function(event) {
                 const response = event.results[0][0].transcript.toLowerCase();
                 if (response.includes('yes') || response.includes('oui')) {
@@ -210,14 +212,19 @@
                                 locInput.value = location;
                                 locInput.dispatchEvent(new Event('input', { bubbles: true }));
                             }
+                            askForTimeSlots(); 
                         };
                         locRec.start();
                     });
+                } else {
+                    askForTimeSlots(); 
                 }
             };
+    
             rec.start();
         });
     }
+    
 
     function enableVoiceCommands() {
         if (!('webkitSpeechRecognition' in window)) return;
@@ -241,6 +248,9 @@
                     } else if (command.includes("passer à l'anglais")) {
                         selectedLang = 'en-US';
                         speakText('Language switched to English.');
+                    } else if (command.includes('test time') || command.includes('tester l\'horaire')) {
+                        speakText(selectedLang === 'fr-FR' ? 'Test de sélection des horaires.' : 'Testing time slot selection.');
+                        askForDateTimeSlot();
                     }
                 };
 
@@ -248,6 +258,250 @@
             }
         });
     }
+
+    function askForTimeSlots() {
+        const isFrench = selectedLang === 'fr-FR';
+        const prompt = isFrench
+            ? "Souhaitez-vous ajouter des horaires maintenant ?"
+            : "Would you like to add your time slots now?";
+    
+        speakText(prompt, () => {
+            const rec = new webkitSpeechRecognition();
+            rec.lang = selectedLang;
+    
+            rec.onresult = function(event) {
+                const response = event.results[0][0].transcript.toLowerCase();
+                if (response.includes('yes') || response.includes('oui')) {
+                    selectDuration();
+                } else {
+                    speakText(isFrench ? "Très bien, sondage prêt." : "Alright, your poll is ready.");
+                }
+            };
+    
+            rec.start();
+        });
+    }
+
+    function selectDuration() {
+        const isFrench = selectedLang === 'fr-FR';
+        const prompt = isFrench
+            ? "Quelle durée souhaitez-vous ? 60, 90, 120 minutes, ou toute la journée ?"
+            : "What duration do you want? 60, 90, 120 minutes, or all day?";
+    
+        speakText(prompt, () => {
+            const rec = new webkitSpeechRecognition();
+            rec.lang = selectedLang;
+    
+            rec.onresult = function(event) {
+                const result = event.results[0][0].transcript.toLowerCase();
+    
+                let matchText = '';
+                if (result.includes('60') || result.includes('soixante')) matchText = '60';
+                else if (result.includes('90') || result.includes('quatre-vingt-dix')) matchText = '90';
+                else if (result.includes('120') || result.includes('cent vingt')) matchText = '120';
+                else if (result.includes('day') || result.includes('journée')) matchText = 'Toute la journée';
+    
+                const durationButton = [...document.querySelectorAll('button')]
+                    .find(btn => btn.textContent.includes(matchText));
+    
+                if (durationButton) durationButton.click();
+    
+                askForDateTimeSlot();
+            };
+    
+            rec.start();
+        });
+    }
+
+    function simulateSlotClick(dayIndex, hour) {
+        const calendar = document.querySelector('.rbc-time-content');
+        const dayColumns = calendar.querySelectorAll('.rbc-day-slot');
+    
+        if (!calendar || !dayColumns || !dayColumns[dayIndex]) {
+            console.error("Calendar column not found for index", dayIndex);
+            return;
+        }
+    
+        const column = dayColumns[dayIndex];
+    
+        const slotHeight = column.offsetHeight / 24;
+        const yOffset = hour * slotHeight;
+    
+        const x = column.getBoundingClientRect().left + 10;
+        const y = column.getBoundingClientRect().top + yOffset;
+    
+        // PointerEvent instead of MouseEvent (more React-compatible)
+        const clickEvent = new PointerEvent('pointerdown', {
+            bubbles: true,
+            clientX: x,
+            clientY: y,
+        });
+    
+        const target = document.elementFromPoint(x, y);
+        if (target) {
+            target.dispatchEvent(clickEvent);
+    
+            // Followed by click
+            const clickEvent2 = new PointerEvent('click', {
+                bubbles: true,
+                clientX: x,
+                clientY: y,
+            });
+            target.dispatchEvent(clickEvent2);
+    
+            console.log('Dispatched pointer+click to', target);
+        } else {
+            console.warn('No target at calculated point', x, y);
+        }
+    }
+    
+
+    function selectSlotByDayAndTime(dayShort, hourInt) {
+        const dayMap = {
+            lun: 'LUN.', mar: 'MAR.', mer: 'MER.', jeu: 'JEU.', ven: 'VEN.', sam: 'SAM.', dim: 'DIM.'
+        };
+    
+        const expectedDayLabel = dayMap[dayShort.toLowerCase()];
+        if (!expectedDayLabel) return console.warn("Invalid day:", dayShort);
+    
+        const dayHeaders = Array.from(document.querySelectorAll('[role="columnheader"]'));
+        const dayIndex = dayHeaders.findIndex(el => el.textContent.trim().startsWith(expectedDayLabel));
+        if (dayIndex === -1) return console.warn("Day header not found for:", expectedDayLabel);
+    
+        const rows = Array.from(document.querySelectorAll('[role="row"]'));
+        for (const row of rows) {
+            const timeLabel = row.querySelector('[role="rowheader"]');
+            if (!timeLabel) continue;
+    
+            const labelText = timeLabel.textContent.trim();
+            const rowHour = parseInt(labelText.split(':')[0]);
+            if (rowHour !== hourInt) continue;
+    
+            const cells = row.querySelectorAll('[role="gridcell"]');
+            const targetCell = cells[dayIndex];
+            if (targetCell) {
+                targetCell.click();
+                console.log(`✅ Selected ${expectedDayLabel} at ${labelText}`);
+            } else {
+                console.warn("No cell found for that time and day.");
+            }
+            break;
+        }
+    }
+    
+    
+    
+    
+    function askForDateTimeSlot() {
+        const isFrench = selectedLang === 'fr-FR';
+        const prompt = isFrench
+            ? "Quel jour et quelle heure souhaitez-vous choisir ?"
+            : "Which day and time would you like to pick?";
+    
+        speakText(prompt, () => {
+            const rec = new webkitSpeechRecognition();
+            rec.lang = selectedLang;
+    
+            rec.onresult = function(event) {
+                const spokenText = event.results[0][0].transcript.toLowerCase();
+                const { day, time, spokenDay } = parseDateCommand(spokenText);
+    
+                if (day && time) {
+                    const readableTime = time?.replace(':00', 'h');
+                    const hourNum = parseInt(time.replace(':00', ''));
+    
+                    const dayNames = ['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'];
+                    const dayIndex = dayNames.indexOf(day);
+    
+                    if (dayIndex === -1 || isNaN(hourNum)) {
+                        speakText(isFrench ? "Jour ou heure non reconnu." : "Unrecognized day or time.");
+                        return askForDateTimeSlot();
+                    }
+    
+                    speakText(
+                        isFrench
+                            ? `Sélection de ${spokenDay} à ${readableTime}`
+                            : `Selecting ${spokenDay} at ${readableTime}`
+                    );
+    
+                    selectSlotByDayAndTime(day, parseInt(time.split(':')[0]));
+    
+                    const askMore = isFrench
+                        ? "Souhaitez-vous ajouter un autre horaire ?"
+                        : "Would you like to add another time slot?";
+                    speakText(askMore, () => {
+                        const moreRec = new webkitSpeechRecognition();
+                        moreRec.lang = selectedLang;
+                        moreRec.onresult = function(e) {
+                            const resp = e.results[0][0].transcript.toLowerCase();
+                            if (resp.includes('yes') || resp.includes('oui')) {
+                                askForDateTimeSlot();
+                            } else {
+                                speakText(
+                                    isFrench ? "Très bien, sondage terminé." : "Alright, done with scheduling."
+                                );
+                            }
+                        };
+                        moreRec.start();
+                    });
+                } else {
+                    speakText(
+                        isFrench
+                            ? "Je n'ai pas compris. Veuillez répéter le jour et l'heure."
+                            : "I didn't catch that. Please repeat the day and time."
+                    );
+                    askForDateTimeSlot();
+                }
+            };
+    
+            rec.start();
+        });
+    }
+    
+    
+
+    function parseDateCommand(text) {
+        const days = {
+            'monday': 'mon', 'tuesday': 'tue', 'wednesday': 'wed',
+            'thursday': 'thu', 'friday': 'fri', 'saturday': 'sat', 'sunday': 'sun',
+            'lundi': 'lun', 'mardi': 'mar', 'mercredi': 'mer',
+            'jeudi': 'jeu', 'vendredi': 'ven', 'samedi': 'sam', 'dimanche': 'dim'
+        };
+    
+        const frenchNumberMap = {
+            'zéro': 0, 'un': 1, 'une': 1, 'deux': 2, 'trois': 3, 'quatre': 4,
+            'cinq': 5, 'six': 6, 'sept': 7, 'huit': 8, 'neuf': 9, 'dix': 10,
+            'onze': 11, 'douze': 12, 'treize': 13, 'quatorze': 14,
+            'quinze': 15, 'seize': 16, 'dix-sept': 17, 'dix huit': 18, 'dix-neuf': 19,
+            'vingt': 20
+        };
+    
+        const lowerText = text.toLowerCase();
+        const dayKey = Object.keys(days).find(d => lowerText.includes(d));
+        const day = dayKey ? days[dayKey] : null;
+    
+        let hour = null;
+        let h = null;
+        const digitMatch = lowerText.match(/(\d{1,2})(?:[:h]\d{2})?\s*(a\.m\.|p\.m\.|am|pm)?/);
+    
+        if (digitMatch) {
+            h = parseInt(digitMatch[1]);
+            const suffix = digitMatch[2];
+            if (suffix && (suffix.includes('p') || suffix.includes('P')) && h < 12) h += 12;
+        } else {
+            const wordKey = Object.keys(frenchNumberMap).find(k => lowerText.includes(k));
+            if (wordKey) {
+                h = frenchNumberMap[wordKey];
+            }
+        }
+    
+        if (h !== null) {
+            hour = h < 10 ? `0${h}:00` : `${h}:00`;
+        }
+    
+        return { day, time: hour, spokenDay: dayKey };
+    }
+
 
     function addAriaLabels() {}
     function addLiveFeedback() {}
@@ -268,3 +522,4 @@
         setTimeout(applyAccessibilityImprovements, 3000);
     });
 })();
+ 
