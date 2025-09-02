@@ -502,6 +502,266 @@
         return { day, time: hour, spokenDay: dayKey };
     }
 
+    /* ========= AVAILABILITY READER & SELECTOR ========= */
+
+/* Utility: speak a queue of lines, one after another */
+function speakQueue(lines, done) {
+	const next = () => {
+		if (!lines.length) return done && done();
+		const line = lines.shift();
+		speakText(line, next);
+	};
+	next();
+}
+
+/* Try to find a human-readable day for a node by walking up the column/card */
+function findDayLabelFor(node) {
+	// Common headings Doodle-like: contains short or long weekday + day number
+	const DAY_PAT = /\b(LUN\.|MAR\.|MER\.|JEU\.|VEN\.|SAM\.|DIM\.|MON|TUE|WED|THU|FRI|SAT|SUN)\b|\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
+	let cur = node;
+	for (let i = 0; i < 6 && cur; i++) {
+		// try column headers or title-like elements
+		const headers = cur.querySelectorAll('h1,h2,h3,[role="columnheader"],[data-testid],.rbc-header');
+		for (const h of headers) {
+			const t = h.textContent.trim();
+			if (DAY_PAT.test(t)) return t.replace(/\s+/g, ' ');
+		}
+		cur = cur.parentElement;
+	}
+	return ''; // fallback
+}
+
+/* Collect all time options visible on the page */
+function getAvailabilitySlots() {
+	const TIME_RANGE = /(\d{1,2}:\d{2}\s?(?:AM|PM)?)\s*[-–]\s*(\d{1,2}:\d{2}\s?(?:AM|PM)?)/i;
+	// heuristic: any element that contains a time range is an option; include buttons in same block
+	const candidates = Array.from(document.querySelectorAll('*, *:before, *:after')).filter(el => {
+		if (!el || !el.textContent) return false;
+		const txt = el.textContent;
+		return TIME_RANGE.test(txt);
+	});
+
+	// dedupe by nearest block (avoid counting a time range multiple times)
+	const blocks = [];
+	const seen = new Set();
+	for (const el of candidates) {
+		let block = el.closest('[role="gridcell"], [role="row"], [data-testid], .card, .rbc-event, .availability, .option, .sc-card, .sc-row') || el;
+		if (!block) block = el;
+		if (seen.has(block)) continue;
+		seen.add(block);
+
+		const txt = block.textContent.replace(/\s+/g, ' ').trim();
+		const m = txt.match(TIME_RANGE);
+		if (!m) continue;
+
+		const day = findDayLabelFor(block);
+		// Find the “vote buttons” inside this block (✅/⚠/✖/⏳)
+		const buttons = Array.from(block.querySelectorAll('button,[role="button"],[aria-pressed]'));
+
+		blocks.push({
+			node: block,
+			dayLabel: day,
+			timeLabel: `${m[1]} - ${m[2]}`,
+			buttons
+		});
+	}
+
+	// Give stable index
+	return blocks.map((b, i) => ({ ...b, index: i + 1 }));
+}
+
+/* Read options aloud */
+function readAvailabilities() {
+	const slots = getAvailabilitySlots();
+	if (!slots.length) {
+		return speakText(selectedLang === 'fr-FR'
+			? "Aucune disponibilité détectée à l'écran."
+			: "I couldn't find any availabilities on the screen.");
+	}
+
+	const lines = slots.map(s => {
+		const idx = `Option ${s.index}`;
+		if (selectedLang === 'fr-FR') {
+			return `${idx}. ${s.dayLabel ? s.dayLabel + ', ' : ''}${s.timeLabel}`;
+		}
+		return `${idx}. ${s.dayLabel ? s.dayLabel + ', ' : ''}${s.timeLabel}`;
+	});
+
+	const intro = selectedLang === 'fr-FR'
+		? "Voici les disponibilités. Dites par exemple: Option 2 oui; ou samedi 6 à 13 heures si besoin."
+		: "Here are the availabilities. Say, for example: Option 2 yes; or Saturday 6 at 1 PM if need be.";
+
+	speakQueue([intro, ...lines], () => awaitSelection(slots));
+}
+
+/* Map localized response words to a status key */
+function parseStatus(text) {
+	const t = text.toLowerCase();
+
+	// YES
+	if (/(^|\s)(yes|oui|ok|d'accord|je peux)(\s|$)/.test(t)) return 'yes';
+
+	// IF NEED BE
+	if (/(if need be|si besoin|si nécessaire|au besoin)/.test(t)) return 'ifneed';
+
+	// CANNOT ATTEND / NO
+	if (/(cannot attend|can\'t|can’t|no|non|je ne peux pas|impossible)/.test(t)) return 'no';
+
+	// PENDING / MAYBE
+	if (/(pending|maybe|à confirmer|peut[- ]?être|incertain)/.test(t)) return 'pending';
+
+	return null;
+}
+
+/* Try to identify an option either by "option N" or by (day + hour) */
+function resolveOptionFromSpeech(slots, speech) {
+	const t = speech.toLowerCase();
+
+	// Option number
+	const m = t.match(/option\s+(\d+)/i);
+	if (m) {
+		const idx = parseInt(m[1], 10);
+		return slots.find(s => s.index === idx) || null;
+	}
+
+	// Day keywords (fr/en) + hour
+	const { day, time } = parseDateCommand(t); // you already have this function
+	if (!day && !time) return null;
+
+	// Build tolerant checks
+	const dayMap = { lun:'lun', mar:'mar', mer:'mer', jeu:'jeu', ven:'ven', sam:'sam', dim:'dim',
+		mon:'mon', tue:'tue', wed:'wed', thu:'thu', fri:'fri', sat:'sat', sun:'sun' };
+
+	const dayShort = day ? dayMap[day] || day : null;
+	const hour = time ? parseInt(time.split(':')[0], 10) : null;
+
+	// Score slots by matching day/hour presence in their labels
+	let best = null, bestScore = -1;
+	for (const s of slots) {
+		let score = 0;
+		const label = `${s.dayLabel} ${s.timeLabel}`.toLowerCase();
+
+		if (dayShort && label.includes(dayShort)) score += 2;
+
+		if (hour != null) {
+			// naive hour match against either 24h or am/pm hour
+			const h24 = hour.toString().padStart(2,'0');
+			const h12 = ((hour % 12) || 12).toString();
+			if (label.includes(`${h24}:`) || label.includes(`${h12}:`)) score += 2;
+		}
+
+		if (score > bestScore) { bestScore = score; best = s; }
+	}
+	return bestScore > 0 ? best : null;
+}
+
+/* Click the correct status button inside a slot */
+function applySelection(slot, statusKey) {
+	if (!slot) return false;
+	const STATUS_PATTERNS = {
+		yes: [/yes/i, /oui/i, /✅/, /\by\b/i],
+		ifneed: [/(if need be|si besoin|si nécessaire|au besoin)/i, /⚠/, /🤞/],
+		no: [/(cannot|can\'t|can’t|no|non|✖|x)/i],
+		pending: [/(pending|maybe|à confirmer|peut[- ]?être|⏳)/i]
+	};
+
+	const pats = STATUS_PATTERNS[statusKey] || [];
+	// Search buttons for a matching aria-label/title/text
+	for (const btn of slot.buttons) {
+		const label = (btn.ariaLabel || btn.getAttribute('aria-label') || btn.title || btn.textContent || '').trim();
+		if (!label) continue;
+		if (pats.some(re => re.test(label))) {
+			btn.click();
+			return true;
+		}
+	}
+	// Fallback: try clickable squares within the same block
+	const fallbackBtns = Array.from(slot.node.querySelectorAll('button,[role="button"]'));
+	for (const btn of fallbackBtns) {
+		const label = (btn.ariaLabel || btn.getAttribute('aria-label') || btn.title || btn.textContent || '').trim();
+		if (pats.some(re => re.test(label))) { btn.click(); return true; }
+	}
+	return false;
+}
+
+/* Listen for one selection command and execute it */
+function awaitSelection(slots) {
+	const prompt = selectedLang === 'fr-FR'
+		? "Dites votre choix, par exemple: Option 1 oui; ou samedi 6 à 13 heures si besoin."
+		: "Say your choice, for example: Option 1 yes; or Saturday 6 at 1 PM if need be.";
+
+	speakText(prompt, () => {
+		const rec = new webkitSpeechRecognition();
+		rec.lang = selectedLang;
+		rec.onresult = (e) => {
+			const speech = e.results[0][0].transcript.trim();
+			const status = parseStatus(speech);
+			const slot = resolveOptionFromSpeech(slots, speech);
+
+			if (!slot || !status) {
+				speakText(selectedLang === 'fr-FR'
+					? "Je n'ai pas compris. Répétez: Option numéro et statut, par exemple: Option 2 oui."
+					: "I didn't get that. Please repeat: option number and status, e.g., Option 2 yes.");
+				return awaitSelection(slots);
+			}
+
+			const ok = applySelection(slot, status);
+			if (ok) {
+				const confirm = selectedLang === 'fr-FR'
+					? `C'est noté pour l'option ${slot.index} : ${slot.timeLabel}.`
+					: `Recorded for option ${slot.index}: ${slot.timeLabel}.`;
+				speakText(confirm, () => {
+					// Ask if user wants to select another
+					const again = selectedLang === 'fr-FR'
+						? "Voulez-vous en sélectionner une autre ?"
+						: "Would you like to select another?";
+					speakText(again, () => {
+						const more = new webkitSpeechRecognition();
+						more.lang = selectedLang;
+						more.onresult = (ev) => {
+							const ans = ev.results[0][0].transcript.toLowerCase();
+							if (ans.includes('yes') || ans.includes('oui')) {
+								return awaitSelection(slots);
+							} else {
+								speakText(selectedLang === 'fr-FR' ? "Terminé." : "All set.");
+							}
+						};
+						more.start();
+					});
+				});
+			} else {
+				speakText(selectedLang === 'fr-FR'
+					? "Je n'ai pas trouvé le bouton correspondant."
+					: "I couldn't find the matching button.");
+			}
+		};
+		rec.start();
+	});
+}
+
+/* Hook it into your existing voice command hotkey (press V) */
+(function extendVoiceCommands() {
+	const originalEnable = enableVoiceCommands;
+	window.enableVoiceCommands = function() {
+		originalEnable();
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'V') {
+				const recognition = new webkitSpeechRecognition();
+				recognition.continuous = false;
+				recognition.interimResults = false;
+				recognition.lang = selectedLang;
+				recognition.onresult = function(event) {
+					const command = event.results[0][0].transcript.toLowerCase();
+					if (command.includes('read availabilities') || command.includes('lire les disponibilités')) {
+						readAvailabilities();
+					}
+				};
+				recognition.start();
+			}
+		}, { capture: true });
+	};
+})();
+
 
     function addAriaLabels() {}
     function addLiveFeedback() {}

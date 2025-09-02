@@ -6,7 +6,7 @@
     "permissions": ["storage", "scripting"],
     "content_scripts": [
       {
-        "matches": ["*://doodle.com/meeting/organize/groups*"],
+        "matches": ["*https://doodle.com/*"],
         "js": ["content.js"],
         "run_at": "document_idle"
       }
